@@ -1,0 +1,1 @@
+R CMD SHLIB -c -o SE.simulation_R-ext.so SE.simulation_R-ext.c

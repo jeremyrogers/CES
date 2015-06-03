@@ -1,0 +1,1 @@
+../../../data/elong_rates/S.cerevisiae.2007.splitSer.tRNA

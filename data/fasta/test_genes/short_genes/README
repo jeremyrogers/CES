@@ -1,0 +1,1 @@
+This directory contains fasta files of short genes that we can use to calculate the exact likelihood by enumerating all possible denominator terms. 

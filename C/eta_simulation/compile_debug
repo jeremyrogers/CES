@@ -1,0 +1,2 @@
+gcc -std=gnu99 -I/usr/share/R/include -I../library    -fPIC -Wall -g -fpic -pipe -c SE.simulation_R-ext.c -o SE.simulation_R-ext.o
+gcc -std=gnu99 -shared -o SE.simulation_R-ext.so SE.simulation_R-ext.o -lgsl -lgslcblas -lCES -L../library -L/usr/lib/R/lib -lR

@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{amsfonts}
+\usepackage{indentfirst}
+\usepackage{enumerate}
+\usepackage{graphicx}
+
+\title{\textbf{Comparing MCMC and Evolution simulation for generation of auxiliary variables}}
+
+\author{Preston Hewgley}
+
+\begin{document}
+\maketitle
+
+\section{Eta Distributions}
+
+\subsection{Phi=0}
+\includegraphics[scale=.65]{0_phi.jpg}
+\subsection{Phi=0.01}
+\includegraphics[scale=.5]{001_phi.jpg}
+\subsection{Phi=0.1}
+
+\includegraphics[scale=.5]{01_phi.jpg}
+\subsection{Phi=1}
+\includegraphics[scale=0.5]{1_phi.jpg}
+\subsection{Phi=10}
+\includegraphics[scale=0.5]{10_phi.jpg}
+
+\section{Runtime}
+\includegraphics[scale=0.5]{../runtime/Runtime_plot_random_50.jpg}
+\section{Phi Prediction}
+\subsection{Evolution Simulation}
+\includegraphics[scale=0.5]{../random_50/EVOL/250_steps/BIS5GMT-5/Rough_plot.jpeg}
+\subsection{MCMC}
+\includegraphics[scale=0.5]{../random_50/MCMC/250_steps/BIS10/Rough_plot.jpeg}
+\end{document}

@@ -1,0 +1,94 @@
+/*======================*
+ *   README for libCES  *
+ *======================*/
+ 
+  /*===========================*
+   *  Making Changes to libCES *
+   *===========================*/
+
+  1) Make changes to source file in directory 'source'
+
+  2) Rebuild library
+    a) If static library is desired (default), use command 'make' 
+       in the source directory.
+    b) If dynamic library is desired, use command 'make -f Makefile_dynamic'.
+       Note: This is not currently set up properly. (7-1-13)
+
+  /*==============================*
+   *  Current Functions in libCES * 
+   *==============================*/
+      
+      
+      /**  iofuns_CES.c  (Input/Output Functions) **/
+
+          1) int Read_tRNA_File(char *filename);
+
+          2) int Process_AA_information();
+
+          3) int Generate_Codon_Structures();
+      
+          4) int wrong();
+      
+      
+      /**  seqfuns_CES.c  (Sequence Functions) **/
+      
+          1) void Convert_Codon_Index_to_AA_Index(unsigned short int *codon_index_vec,
+                              unsigned short int *aa_index_vec, int aa_count);
+                              
+          2) void Generate_Random_Codon_Seq_and_Index (char codon_seq[][4],
+                              unsigned short int *codon_index,
+                              unsigned short int *aa_index, int aa_count);
+                              
+          3) void Generate_Random_Codon_Index(unsigned short int *codon_index,
+                              unsigned short int *aa_index, int aa_count);
+                              
+          4) void Convert_Codon_Index_to_Sigma_Vec(unsigned short int *index_vec,
+                              double *sigma_vec, int aa_count);
+                              
+          5) void Calc_B_over_C_Vec(unsigned short int *codon_index_vec, double *b_over_c_vec,
+                              int aa_count);
+                              
+          6) void Convert_Sigma_Vec_to_Sigma_Ratio_Vec (double *sigma_vec,
+                              double *sigma_ratio_vec, int aa_count);
+                              
+          7) void Recalc_Sigma_Vec (double *sigma_vec, int mut_codon_pos, double factor,
+                              int aa_count);
+                              
+          8) double Calc_Xi_NSE (double *sigma_vec, int aa_count);
+      
+          9) double Calc_Eta_NSE (double sigma_n, double xi, int aa_count);
+      
+         10) double Calc_Seq_Mu(int * codon_counts_vec, int aa_count);
+
+
+      /**  osnfuns_CES.c  (One-Step Neighbor Functions)  **/
+      
+          1) int Calc_Dimensionality(unsigned short int *codon_index_vec, int aa_count);
+      
+          2) int Generate_D_Array(unsigned short int *codon_index_vec,
+                 unsigned short int *D_array[][2], int aa_count);
+                 
+          3) void Calc_Delta_Eta_NSE_First_and_Second_Term_Vecs(double *sigma_ratio_vec,
+                 double *b_over_c_vec, double *delta_eta_first_term_vec, 
+                 double *delta_eta_second_term_vec, int aa_count);
+                 
+          4) void Calc_Delta_Eta_NSE_Vec(unsigned short int *codon_index_vec,
+                 double *b_over_c_vec, double *first_term_vec,
+                 double *second_term_vec, double *delta_eta_vec,
+                 int aa_count, int D_dim);
+                 
+          5) void Calc_Pi_Vec(double *delta_eta_vec, double *pi_vec, double *ptr_pi_total,
+                 double phi, double qPhi, double two_qNePhi, int aa_count, 
+                 int D_dim);
+                 
+          6) void Calc_Replacement_Pr_Vec(double *mutation_vec, double *pi_vec, double *pr_vec,
+                 double *ptr_pr_total, int D_dim);
+
+  /*===================*
+   *  Troubleshooting  *
+   *===================*/
+
+If your code gives an error message that says it cannot find libCES.a, 
+try this command:
+
+sudo ldconfig /path/to/ces2/library/

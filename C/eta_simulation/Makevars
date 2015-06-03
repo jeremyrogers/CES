@@ -1,0 +1,8 @@
+ces_lib = ../library
+gsl_loc = /usr/include/
+
+PKG_CPPFLAGS = -I$(ces_lib)
+PKG_LIBS = -lgsl -lgslcblas -lCES -L$(ces_lib) -L$(gsl_loc)
+#PKG_CFLAGS = -fPIC -Wall -g
+PKG_CFLAGS = -mtune=generic -O3 -funroll-loops -fPIC -Wall 
+

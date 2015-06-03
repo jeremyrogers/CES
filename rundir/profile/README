@@ -1,0 +1,3 @@
+SE.simulation_R-ext.c is a copy of ces3/branches/exchange/C/eta_simulation/SE.simulation_R-ext.c from 3-26-14. It is compiled as a library and called from profile.c for profiling purposes.
+
+whewgley 3-26-14

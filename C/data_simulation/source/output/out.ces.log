@@ -1,0 +1,15 @@
+
+Codon Evolution Simulation (CES) Version 0.9
+The code was executed on Tue Jun  2 17:00:28 2015
+
+Input file : ../../../data/fasta/test_genes/short_genes/polyglu.fasta
+tRNA file : ../../../data/elong_rates/S.cerevisiae.2007.tRNA	Mutation File : NONE
+Output : output/out
+No. of sequences : 6
+Evolution Run time : -5.000000
+Ignore last AA: 0,
+Runtimes (Read, Computation, Print, Total) : 0.0004	0.0190	0.0193	0.0197 seconds
+
+
+Command line arguments used to run code: 
+	./CES -F ../../../data/fasta/test_genes/short_genes/polyglu.fasta -T ../../../data/elong_rates/S.cerevisiae.2007.tRNA 

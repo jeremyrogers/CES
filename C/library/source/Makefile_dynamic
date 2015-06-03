@@ -1,0 +1,22 @@
+# Makefile for CES library
+
+CC = gcc
+#LIBS = 
+INCS = -I../
+#Flags for optimization
+CFLAGS = -std=gnu99 -fPIC -O3 -pipe -c -mtune=generic -Wall $(INCS)
+#Flags for debugging
+#CFLAGS = -std-gnu99 -fPIC -Og -pipe -c -mtune=generic -Wall $(INCS)
+
+OBJS = Read_tRNA_File.o 
+
+all: ../libCES.so clean
+
+../libCES.so: $(OBJS)
+	gcc -shared -Wl,-soname,libCES.so -o ../libCES.so $(OBJS)
+
+Read_tRNA_File.o: Read_tRNA_File.c Read_tRNA_File.h ../CES_struct.h
+	$(CC) $(CFLAGS) -o Read_tRNA_File.o Read_tRNA_File.c
+
+clean: *.o
+	rm -f *.o

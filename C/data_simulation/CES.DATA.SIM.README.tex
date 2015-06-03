@@ -1,0 +1,376 @@
+\documentclass{article}
+\usepackage{fullpage}
+
+
+\title{\textbf{CES--Codon Evolution Simulation} \\ {\Large Version 1.2}}
+
+\author{Preston Hewgley, Micheal A. Gilchrist}
+
+\begin{document}
+\addtolength{\topmargin}{-1cm}
+\addtolength{\textheight}{1cm}
+\maketitle
+
+%=================================================================================================================
+
+\section{Overview}
+	\begin{quote}
+		CES (Codon Evolution Simulation) is a program that takes genetic sequences observed in the wild,
+		 generates random synonymous\footnote{A synonym to a codon is a different codon that codes for the same 
+		 amino acid. Since there are 61 translated codons and only 20 translated amino acids, there is
+		 redundancy among codon-amino acid pairs. Thus, a synonymous sequence is a sequence that may 
+		 have a different codon sequence, but has the same amino acid sequence.} sequences, and simulates 
+		 the evolution of the random sequence under selective pressures against nonsense errors (NSE). 
+		 CES simulates evolution by calculating the probability of mutant fixation\footnote{The probability of 
+		 a mutant fixation is the probability that a mutation will occur and the new genotype will take over
+		 the entire population.} for all one-step neighbors\footnote{One-step neighbors are synonymous
+		 sequences that differ by only one codon.} and choosing a substitution based on these probabilities and a 
+		 randomly generated number. By default, evolution steps are carried out until an average
+		 of 5 substitutions per codon are carried out. The basis of the calculations used in this code are described in 
+		 Sella and Hirsh (2005) and Gilchrist, Shah, and Zaretzki (2009). The code was used in Gilchrist,
+		 Shah, and Zaretzki (2009) to generate simulated sequences and compare them to observed sequences
+		 using several metrics. 
+
+	\end{quote}
+
+%=================================================================================================================	
+	
+\section{Repository Information}
+	\begin{tabular}{|c|c|p{7cm}|}
+		\hline
+		\textbf{Description} & \textbf{Location} & \textbf{Notes} \\\hline
+		Base Repository & file:///home/semppr/svnrepos/CES & The base repository for this project was made by Preston Hewgley in June 2012. \\\hline
+		Source Files & file:///home/semppr/svnrepos/CES/source & This folder holds current and past versions. \\\hline
+		Data & file:///home/semppr/svnrepos/CES/data & This folder holds FASTA files, elongation rates, expression levels, and mutation files. \\\hline
+		Results & file:///home/semppr/svnrepos/CES/results & This folder holds data from results and graphics produces with the data.\\\hline
+		Benchmarks & file:///home/semppr/svnrepos/CES/benchmark & This folder holds benchmark data produced using the -ben option.\\\hline
+	\end{tabular}
+
+%=================================================================================================================
+
+\section{Commandline Arguments and Options}
+
+	\subsection{Commandline Arguments}
+	
+		{\Large Here is a sample commandline template:}\\ \\
+		{\renewcommand{\arraystretch}{1.5}
+		 \renewcommand{\tabcolsep}{0.3cm}
+		 \begin{tabular}{|c|}
+			\hline
+			./CES -F $<$\textit{FASTA input file}$>$ -T $<$\textit{tRNA/elongation rate file}$>$[\textit{Options}]\\
+			\hline
+		 \end{tabular}}
+	
+	\subsection{Options}
+		{\renewcommand{\arraystretch}{1.3}
+		 \renewcommand{\tabcolsep}{0.2cm}
+		 \begin{tabular}{|c|c|p{10cm}|}
+			\hline
+			\textbf{Flag} & \textbf{Argument} & \textbf{Notes} \\
+			\hline
+			-F & $<$FILE$>$ & Location of the fasta file to be used for simulation. Note the program 
+			will likely crash if genes with internal stop codons are used.
+			phi values must be included on the same line as the ORF name OR included in a phi value file, e.g.\\
+			& & 
+			$>$YAL001C	phi=	0.0088862 \\
+			& & Note the use of TABS between the ORF name and "phi=" and the phi value\\
+			\hline
+			-T & $<$STRING$>$ & Specify the location of the tRNA abundance/codon 
+			translation file.\\
+			%& & [DEFAULT] "tRNA\_files/S.cerevisiae.tRNA.tsv"\\
+			\hline
+			-P & $<$STRING$>$ & Specify the location of the phi value file. \\
+			\hline
+			-C & $<$NONE$>$ & Outputs codon counts for low expression genes. Does not produce output files for evolution simulation.\\
+			\hline
+			-U1 & $<$STRING$>$ & Specify the location of incoming sum mutation rate file (for more info see section \ref{subsec:this}).\\
+			\hline
+			-U2 & $<$STRING$>$ & Specify the location of individual mutation rate file (for more info see section \ref{subsec:this}).\\
+			\hline
+			-A1 & $<$REAL$>$ & Specify ribosome initation cost in ATPs \\
+			& & [DEFAULT] a1=4\\
+			\hline
+			-A2  & $<$REAL$>$ & Specify ribosome elongation cost in ATPs,  a2 in SEMPPR \\
+			& & [DEFAULT] a2=4\\
+			\hline
+			-AT & $<$REAL$>$ & Specify genome AT bias (0.0-1.0).\\
+			& & [DEFAULT] at=0.5		\\
+			\hline
+			-B & $<$REAL$>$ & Specify the B parameter value\\
+			& & [DEFAULT] B=0.0025\\
+			\hline
+			-D & $<$BOOLEAN$>$ & Indicate whether to print out delta\_eta files for each evolutionary step.
+			Print outs can get quite large\\
+			& & [DEFAULT] D=0.  \\
+			\hline
+			-E & $<$BOOLEAN$>$ & Indicate whether to print out eta and mu trace file\\
+			& & [DEFAULT] E = 0. \\
+			\hline
+			-I & $<$INT$>$ & Specify whether CES should relax selection on the last $<$INT$>$ 
+			amino acids of each sequence.  Used because it is thought that
+			most genes can lose a few aa at the end, but still be 
+			functional.\\
+			\hline
+			-M & $<$INT$>$ & Indicates simulation time. Simulation time is scaled by the mutation rate mu,  
+			where mu = 1E-9. 
+			If the argument X is $>$ 0, then we expect to see X * mu substitutions/codon.
+			If X $<$ 0, then we run for -X/mu time or, in other words, we expect to see -X
+			substitutions if the genes were evolving neutrally.\\
+			& & [DEFAULT] = -20 \\
+			\hline
+			-Ne & $<$REAL$>$ & Effective population size. \\
+			& & [DEFAULT] = 1.36E7\\
+			\hline
+			-O & $<$STRING$>$ & Specifies the folder for output files as well as prefix for specific
+			output and log files.\\
+			& & [DEFAULT] "output/out"\\
+			\hline			
+			-V & $<$REAL$>$ & Ratio of transition to transversion mutation rates.\\
+			& & [DEFAULT] 1.0 \\
+			\hline
+			-ben & $<$NONE$>$ & Replaces randomly generated numbers with predetermined ones. 
+			Useful when creating benchmarks or testing.\\
+			\hline
+		 \end{tabular}}
+		
+%=================================================================================================================	
+
+\section{Input File Information}
+	All acquired Input Files can be found in the data directory of CES.
+
+	\subsection{FASTA file}
+		\begin{itemize}
+			\item File may start with header
+			\item Each gene must start with ATG
+			\item Must either (a) include phi values in header or (b) include phi value file
+			\item Must be in proper FASTA file format, e.g. \\
+				\begin{tabular}{c c c}
+				$>$(Gene ID) & phi= & (Value) \\
+				\multicolumn{3}{l}{ATGNNNNNNNNNNNN...}
+				\end{tabular} 
+		\end{itemize}
+		
+	\subsection{Phi value file}
+		\begin{itemize}
+			\item File may start with header, but the header must start with a double quote (")
+			\item Gene ID and Phi value must be separated with "\verb+\t+", ",", or " " (tab, comma, or space).
+			\item E.g.\\
+				\begin{tabular}{c c}
+				\multicolumn{2}{l}{"Optional Header"}\\
+				YAL001C,0.008886154568855773
+				\end{tabular}
+		\end{itemize}
+		
+	\subsection{tRNA/Elongation file}
+		\begin{itemize}
+			\item File may start with header, but the header must start with a double quote(").
+			\item Must separate AA index, Codon, and Elongation rate with "\verb+\t+" (tab).
+			\item Must group synonymous codons together.
+			\item E.g. \\
+				\begin{tabular}{c c c}
+				\multicolumn{3}{l}{"Optional Header"}\\
+				A & GCA & 7.82\\
+				\end{tabular}
+		\end{itemize}
+	
+	\subsection{Mutation file}
+		\label{subsec:this}
+		There are two types of mutation files. The first type consists of the sum of incoming mutation rates for each codon.
+		The second includes all individual mutation rates for all codons. 
+		\subsubsection{Incoming Sum Mutation file}
+			\begin{itemize}
+				\item File may start with header, but the header must start with a double quote (").
+				\item Must separate AA index, Codon, Mutation rate with "\verb+\t+" (tab).
+				\item Must group synonymous codons together
+				\item E.g. \\
+					\begin{tabular}{c c c}
+					\multicolumn{3}{l}{"Optional Header"} \\
+					A & GCA & 1 \\
+					A & GCC & 0.5872495 \\
+					\end{tabular}
+			\end{itemize}
+		\subsubsection{Individual Rate Mutation file}
+			\begin{itemize}
+				\item File may start with header, but the header must start with a double quote(").
+				\item Must conform to this format: \\
+					\begin{tabular}{c c c c c}
+						\multicolumn{5}{l}{"Optional Header"} \\
+						$>$A & GCA & GCC & GCG & GCT \\
+						GCA & 0 & .22 & .11 & .32 \\
+						GCC & .34 & 0 & .13 & .30 \\
+						GCG & .30 & .25 & 0 & .29 \\
+						GCT & .32 & .27 & .09 & 0 \\
+						$>$C & TGC & TCT \\
+						TGC & 0 & 2.09 \\
+						TGT & 1 & 0 \\
+					\end{tabular} \\
+					ETC...
+				\item A "$>$" must preeced each Amino Acid.
+				\item Entries may be separated with "\verb+\t+" or " " (tab or space).
+				\item Index convention is as follows: Entry in row i and column j is mutation rate from 
+					  codon i to codon j ($\mu_{ij}$).				
+				\item Mutation rate of any codon to itself is 0.
+				\item Rows and columns must be labeled symmetrically. Check if diagonal is composed of zero's.
+
+			\end{itemize}
+				
+
+%=================================================================================================================	
+	
+\section{Pseudocode}
+
+	\subsection{Quick and Dirty}
+		\begin{enumerate}
+			\item Read Input Files (Fasta sequence file, elogation rate file, and (optional) mutation rate file)
+			\item Generate random synonymous sequence
+			\item Calculate $\eta_{obs}$
+			\item Calculate $\Delta\eta$ for all one-step neighbors
+			\item Calculate Replacement Probability for all one-step neighbors
+			\item Choose random number to determine substitution based on Replacement Probability
+			\item Repeat steps 3-6 for desired evolution time
+			\item Print output
+		\end {enumerate}
+
+%=================================================================================================================		
+	
+		
+\section{Overview of Equations}
+	\begin{center}	
+	
+	\begin{tabular}[c]{r |l|}
+		\cline{2-2}
+		{\Large $\sigma_{i}(\vec{c})  =  \prod_{j=1}^i \frac{c_{j}}{(c_{j} + b)} \qquad \qquad$} & Translation Probability \\ \cline{2-2}
+	\end{tabular} \\\
+	
+	\begin{tabular}{c r @{=} l}
+		Where: & $c_{j}$ & Elongation rate of codon j \\
+		& $b$ & Background nonsense error rate \\
+	\end{tabular}
+		
+	\end{center}
+	
+	\begin{quote}
+		This is the probability that a ribosome will translate up to and including codon i. Since it can be shown that the probability of 
+		translating a single codon j equals $\frac{c_{j}}{c_{j}+b}$, it follows that the cumulative translation probability of codon i equals 
+		the product of the elongation probability for every codon up to and including codon i. \textbf{NOTE:} $\sigma_{n}$ denotes the 
+		probability that a protein is fully translated. \\ 
+	\end{quote} 
+	
+	\begin{center}
+	
+	\begin{tabular}[c]{c|l|}
+		\cline{2-2}
+		{\Large $\xi(\vec{c}) = \frac{1}{1-\sigma_{n}(\vec{c})}\sum_{i=1}^n(a_{1}+a_{2}i)\sigma_{i-1}(\vec{c})\frac{b}{c_{i}+b}  \qquad \qquad$} & Expected energetic\\
+		&  cost of a NSE \\
+		\cline{2-2}	
+	\end{tabular}\\\
+	
+	\begin{tabular}{c r @{=} l}
+		Where: & $a_{1}$ & Energetic cost of ribosome recharge\\
+		& $a_{2}$ & Energetic cost of a peptide bond\\
+	\end{tabular}\\*
+	
+	\end{center}
+	
+	\begin{quote}
+		Note that the first part of the summation, $(a_{1}+a_{2}i)$, is the cost of translating up to codon i and the second part,
+		$\sigma_{i-1}(\vec{c})\frac{b}{c_{i}+b}$, is the probability that a nonsense error will occur on codon i. $\frac{1}{1-\sigma_{n}(\vec{c})}$
+		is a factor to scale this calculation. \\
+	\end{quote} 
+	
+	\begin{center}
+	
+	\begin{tabular}[c]{r |l|}
+		\cline{2-2}
+		{\Large $\eta(\vec{c}) = \bigg(\frac{1}{\sigma_{n}}-1\bigg)\xi(\vec{c}) + (a_{1}+a_{2}i)  \qquad \qquad$} & Expected cost of\\
+		& producing one protein\\
+		\cline{2-2}
+	\end{tabular}\\\
+	
+	\end{center}
+	
+	\begin{quote}
+		Essentially, this is a composition of the expected cost of all nonsense errors plus the cost of a completed protein,
+		$(a_{1}+a_{2}i)$. \\
+	\end{quote} 
+	
+	\begin{center}
+	
+	\begin{tabular}[c]{r |l|}
+
+		\cline{2-2}
+		{\Large $w(\vec{c}) \propto e^{-q\phi\eta}  \qquad \qquad$} & Fitness function\\
+		\cline{2-2}
+	\end{tabular}\\\
+	
+	\begin{tabular}{c r @{=} l}
+		Where: & $q$ & Scaling factor\\
+		& $\phi$ & Protein production rate\\
+	\end{tabular}\\
+	
+	\end{center}
+	
+	\begin{quote}
+		We assume that fitness is proportional to a negative exponential function of the protein cost rate. \\
+	\end{quote} 
+	
+	\begin{center}
+	
+	\begin{tabular}[c]{r |l|}
+		\cline{2-2}
+		{\Large $ \pi(i \rightarrow j) = \frac{1-{\huge\frac{w_{i}}{w_{j}}}}{1-\bigg({\huge\frac{w_{i}}{w_{j}}}\bigg)^{2Ne}} \qquad \qquad$} & Fixation probability\\
+		\cline{2-2}
+	\end{tabular}\\\
+	
+	\begin{tabular}{c r @{=} l}
+		Where: & $Ne$ & Effective population size\\
+	\end{tabular}\\
+	
+	\end{center}
+	
+	\begin{quote}
+		This is the probability of fixation given a mutation occurs. \\
+	\end{quote} 
+	
+	\begin{center}
+	
+	\begin{tabular}[c]{r |l|}
+		\cline{2-2}
+		{\Large $P_{j} = \mu_{ij} Ne \pi(i \rightarrow j) \qquad \qquad$} & Replacement probability\\
+		\cline{2-2}
+	\end{tabular}\\\
+	
+	\begin{tabular}{c r @{=} l}
+		Where: & $\mu_{ij}$ & Mutation rate from codon i to codon j\\
+	\end{tabular}\\
+
+	\end{center}
+	
+	\begin{quote}
+		This is the probability that a mutation occurs and it fixes. Basically, it is the probability
+		of fixation given a mutation occurs, $\pi(i \rightarrow j)$, weighted by the rate at which mutations
+		occur, $\mu_{ij} Ne$. \\
+	\end{quote} 
+
+%=================================================================================================================
+
+\section{Other Info}
+	
+	\subsection{Compilers}
+		The code can be recompiled from source and optimized for the hardware of the 
+		machine it will be run on.\\	
+		The source code has been successfully compiled with the following compilers.\\
+		Mac:		gcc, g++\\
+		Linux:		g++, gcc -lm\\	
+		In addition, the development libraries of the GNU Scientific Libraries must be installed.\\
+		
+	\subsection{Build}
+		Builds on Ubuntu 12.04 machine with GSL libraries using provided makefile.\\		
+		Makefile provides several different sets of options. For use with multiple CPUs that share memory,
+		choose a set of options that includes the flag -fopenmp when compiling\\
+	
+	\subsection{Bugs}
+		In case of any bugs or trouble with the code, send an email to whewgley@utk.edu or mikeg@utk.edu\\
+		
+%=================================================================================================================	
+\end{document}
