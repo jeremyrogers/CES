@@ -1523,7 +1523,7 @@ Evolve_Sequence (struct seq_struct *seq, int aa_count) {
 	//double new_xi,new_sigma_n,new_eta,previous_eta,
 	double new_eta,previous_eta,
 				 abs_error_delta_eta, rel_error_delta_eta,direct_calc_delta_eta;
-	int directly_update_eta = 1;
+	int directly_update_eta = 0;
 	//int aa_position,wt_index,mut_index;
 
 	double seq_mu;

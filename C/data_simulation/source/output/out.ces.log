@@ -13,3 +13,33 @@ Runtimes (Read, Computation, Print, Total) : 0.0004	0.0190	0.0193	0.0197 seconds
 
 Command line arguments used to run code: 
 	./CES -F ../../../data/fasta/test_genes/short_genes/polyglu.fasta -T ../../../data/elong_rates/S.cerevisiae.2007.tRNA 
+
+Codon Evolution Simulation (CES) Version 0.9
+The code was executed on Thu Jun  4 14:57:07 2015
+
+Input file : ../../../data/fasta/jeremyYeast.fasta
+tRNA file : ../../../data/elong_rates/jeremyYeast.splitSer.tsv	Mutation File : NONE
+Output : output/out
+No. of sequences : 5530
+Evolution Run time : -5.000000
+Ignore last AA: 0,
+Runtimes (Read, Computation, Print, Total) : 0.6478	59.1621	59.3211	59.9689 seconds
+
+
+Command line arguments used to run code: 
+	./CES -F ../../../data/fasta/jeremyYeast.fasta -T ../../../data/elong_rates/jeremyYeast.splitSer.tsv -P ../../../data/expression_rates/jyeast.phi.tsv 
+
+Codon Evolution Simulation (CES) Version 0.9
+The code was executed on Tue Jun  9 15:05:11 2015
+
+Input file : ../../../data/fasta/jeremyYeast.fasta
+tRNA file : ../../../data/elong_rates/jeremyYeast.splitSer.tsv	Mutation File : NONE
+Output : output/out
+No. of sequences : 5530
+Evolution Run time : -5.000000
+Ignore last AA: 0,
+Runtimes (Read, Computation, Print, Total) : 0.4552	57.2747	57.4404	57.8956 seconds
+
+
+Command line arguments used to run code: 
+	/export/home/jroger44/GitHub/ces3/C/data_simulation/source/CES -F ../../../data/fasta/jeremyYeast.fasta -T ../../../data/elong_rates/jeremyYeast.splitSer.tsv -P ../../../data/expression_rates/jyeast.phi.tsv 
